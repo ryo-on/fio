@@ -494,7 +494,7 @@ static void *clock_thread_fn(void *data)
 #if defined(__NetBSD__)
 	if (fio_cpuset_init(cpu_mask)) {
 #else
-	if (fio_cpuset_init(cpu_mask)) {
+	if (fio_cpuset_init(&cpu_mask)) {
 #endif
 		int __err = errno;
 
