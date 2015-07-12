@@ -19,7 +19,7 @@
  */
 
 #if !defined(BITS_PER_LONG)
-#define	BITS_PER_LONG __SIZEOF_LONG__*8
+#define	BITS_PER_LONG (__SIZEOF_LONG__*CHAR_BIT)
 #endif
 
 #if BITS_PER_LONG == 32
