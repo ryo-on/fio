@@ -1386,7 +1386,11 @@ static void *thread_main(void *data)
 	 * thread from this job
 	 */
 	if (o->gtod_cpu)
+#if defined(__NetBSD__)
+		fio_cpu_clear(o->cpumask, o->gtod_cpu);
+#else
 		fio_cpu_clear(&o->cpumask, o->gtod_cpu);
+#endif
 
 	/*
 	 * Set affinity first, in case it has an impact on the memory
@@ -1394,7 +1398,11 @@ static void *thread_main(void *data)
 	 */
 	if (fio_option_is_set(o, cpumask)) {
 		if (o->cpus_allowed_policy == FIO_CPUS_SPLIT) {
+#if defined(__NetBSD__)
+			ret = fio_cpus_split(o->cpumask, td->thread_number - 1);
+#else
 			ret = fio_cpus_split(&o->cpumask, td->thread_number - 1);
+#endif
 			if (!ret) {
 				log_err("fio: no CPUs set\n");
 				log_err("fio: Try increasing number of available CPUs\n");
@@ -1653,7 +1661,11 @@ err:
 	verify_free_state(td);
 
 	if (fio_option_is_set(o, cpumask)) {
+#if defined(__NetBSD__)
+		ret = fio_cpuset_exit(o->cpumask);
+#else
 		ret = fio_cpuset_exit(&o->cpumask);
+#endif
 		if (ret)
 			td_verror(td, ret, "fio_cpuset_exit");
 	}

@@ -483,18 +483,30 @@ static void *clock_thread_fn(void *data)
 {
 	struct clock_thread *t = data;
 	struct clock_entry *c;
+#if defined(__NetBSD__)
+	os_cpu_mask_t *cpu_mask = cpuset_create();
+#else
 	os_cpu_mask_t cpu_mask;
+#endif
 	uint32_t last_seq;
 	int i;
 
-	if (fio_cpuset_init(&cpu_mask)) {
+#if defined(__NetBSD__)
+	if (fio_cpuset_init(cpu_mask)) {
+#else
+	if (fio_cpuset_init(cpu_mask)) {
+#endif
 		int __err = errno;
 
 		log_err("clock cpuset init failed: %s\n", strerror(__err));
 		goto err_out;
 	}
 
+#if defined(__NetBSD__)
+	fio_cpu_set(cpu_mask, t->cpu);
+#else
 	fio_cpu_set(&cpu_mask, t->cpu);
+#endif
 
 	if (fio_setaffinity(gettid(), cpu_mask) == -1) {
 		int __err = errno;
@@ -538,10 +550,18 @@ static void *clock_thread_fn(void *data)
 	if (!t->entries[i - 1].tsc && !t->entries[0].tsc)
 		goto err;
 
+#if defined(__NetBSD__)
+	fio_cpuset_exit(cpu_mask);
+#else
 	fio_cpuset_exit(&cpu_mask);
+#endif
 	return NULL;
 err:
+#if defined(__NetBSD__)
+	fio_cpuset_exit(cpu_mask);
+#else
 	fio_cpuset_exit(&cpu_mask);
+#endif
 err_out:
 	return (void *) 1;
 }

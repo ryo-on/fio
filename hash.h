@@ -18,6 +18,10 @@
  * machines where multiplications are slow.
  */
 
+#if !defined(BITS_PER_LONG)
+#define	BITS_PER_LONG __SIZEOF_LONG__*8
+#endif
+
 #if BITS_PER_LONG == 32
 /* 2^31 + 2^29 - 2^25 + 2^22 - 2^19 - 2^16 + 1 */
 #define GOLDEN_RATIO_PRIME 0x9e370001UL

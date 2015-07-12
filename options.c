@@ -435,7 +435,11 @@ static int str_cpumask_cb(void *data, unsigned long long *val)
 	if (parse_dryrun())
 		return 0;
 
+#if defined(__NetBSD__)
+	ret = fio_cpuset_init(td->o.cpumask);
+#else
 	ret = fio_cpuset_init(&td->o.cpumask);
+#endif
 	if (ret < 0) {
 		log_err("fio: cpuset_init failed\n");
 		td_verror(td, ret, "fio_cpuset_init");
@@ -452,7 +456,11 @@ static int str_cpumask_cb(void *data, unsigned long long *val)
 				return 1;
 			}
 			dprint(FD_PARSE, "set cpu allowed %d\n", i);
+#if defined(__NetBSD__)
+			fio_cpu_set(td->o.cpumask, i);
+#else
 			fio_cpu_set(&td->o.cpumask, i);
+#endif
 		}
 	}
 
@@ -532,14 +540,22 @@ static int str_cpus_allowed_cb(void *data, const char *input)
 	if (parse_dryrun())
 		return 0;
 
+#if defined(__NetBSD__)
+	return set_cpus_allowed(td, td->o.cpumask, input);
+#else
 	return set_cpus_allowed(td, &td->o.cpumask, input);
+#endif
 }
 
 static int str_verify_cpus_allowed_cb(void *data, const char *input)
 {
 	struct thread_data *td = data;
 
+#if defined(__NetBSD__)
+	return set_cpus_allowed(td, td->o.verify_cpumask, input);
+#else
 	return set_cpus_allowed(td, &td->o.verify_cpumask, input);
+#endif
 }
 #endif
 

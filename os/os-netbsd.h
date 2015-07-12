@@ -12,6 +12,9 @@
 #undef rb_node
 #undef rb_left
 #undef rb_right
+#define _NetBSD_SOURCE
+#include <sched.h>
+#include <unistd.h>
 
 #include "../file.h"
 
@@ -20,8 +23,61 @@
 #define FIO_USE_GENERIC_RAND
 #define FIO_USE_GENERIC_INIT_RANDOM_STATE
 #define FIO_HAVE_GETTID
+#define	FIO_HAVE_CPU_AFFINITY
+#define	FIO_MAX_CPUS 1024
 
-#undef	FIO_HAVE_CPU_AFFINITY	/* XXX notyet */
+typedef	cpuset_t os_cpu_mask_t;
+
+static inline int fio_cpu_isset(os_cpu_mask_t *mask, const cpuid_t cpu)
+{
+	return cpuset_isset(cpu, mask);
+}
+
+static inline int fio_setaffinity(int tid, os_cpu_mask_t *cpumask)
+{
+	return _sched_getaffinity(getpid(), tid, cpuset_size(cpumask), cpumask);
+}
+
+static inline int fio_getaffinity(int tid, os_cpu_mask_t *cpumask)
+{
+	return _sched_getaffinity(getpid(), tid, cpuset_size(cpumask), cpumask);
+}
+
+static inline int fio_cpuset_init(os_cpu_mask_t *mask)
+{
+	cpuset_zero(mask);
+	return 0;
+}
+
+static inline void fio_cpu_set(os_cpu_mask_t *mask, int cpu)
+{
+	cpuset_set(cpu, mask);
+	return;
+}
+
+static inline int fio_cpuset_exit(os_cpu_mask_t *mask)
+{
+	return 0;
+}
+
+static inline int fio_cpu_count(os_cpu_mask_t *mask)
+{
+	int cpu = sysconf(_SC_NPROCESSORS_CONF);
+	int count = 0;
+
+	for (int i = 0; i < cpu; i++) {
+		if(cpuset_isset(i, mask)) {
+			count++;
+		}
+	}
+	return count;
+}
+
+static inline void fio_cpu_clear(os_cpu_mask_t *mask, int cpu)
+{
+	cpuset_clr(cpu, mask);
+	return;
+}
 
 #define OS_MAP_ANON		MAP_ANON
 

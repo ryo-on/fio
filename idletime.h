@@ -35,7 +35,11 @@ struct idle_prof_thread {
 	pthread_mutex_t init_lock;
 	pthread_mutex_t start_lock;
 
+#if defined(__NetBSD__)
+	os_cpu_mask_t *cpu_mask;
+#else
 	os_cpu_mask_t cpu_mask;
+#endif
 };
 
 struct idle_prof_common {
