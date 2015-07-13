@@ -35,11 +35,13 @@ static inline int fio_cpu_isset(os_cpu_mask_t *mask, const cpuid_t cpu)
 
 static inline int fio_setaffinity(int tid, os_cpu_mask_t *cpumask)
 {
+	printf("TID: %d\n", tid);
 	return _sched_setaffinity(getpid(), tid, cpuset_size(cpumask), cpumask);
 }
 
 static inline int fio_getaffinity(int tid, os_cpu_mask_t *cpumask)
 {
+	printf("TID: %d\n", tid);
 	return _sched_getaffinity(getpid(), tid, cpuset_size(cpumask), cpumask);
 }
 

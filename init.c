@@ -1702,11 +1702,7 @@ static int fill_def_thread(void)
 {
 	memset(&def_thread, 0, sizeof(def_thread));
 
-#if defined(__NetBSD__)
 	fio_getaffinity(getpid(), def_thread.o.cpumask);
-#else
-	fio_getaffinity(getpid(), &def_thread.o.cpumask);
-#endif
 	def_thread.o.error_dump = 1;
 
 	/*

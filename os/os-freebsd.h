@@ -48,9 +48,9 @@ static inline int fio_cpuset_exit(os_cpu_mask_t *mask)
         return 0;
 }
 
-static inline int fio_setaffinity(int pid, os_cpu_mask_t cpumask)
+static inline int fio_setaffinity(int pid, os_cpu_mask_t *cpumask)
 {
-	return cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, pid, sizeof(cpumask), &cpumask);
+	return cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_TID, pid, sizeof(cpumask), cpumask);
 }
 
 static inline int fio_getaffinity(int pid, os_cpu_mask_t *cpumask)

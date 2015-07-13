@@ -50,12 +50,12 @@ typedef struct drand48_data os_random_state_t;
 
 #ifdef CONFIG_3ARG_AFFINITY
 #define fio_setaffinity(pid, cpumask)		\
-	sched_setaffinity((pid), sizeof(cpumask), &(cpumask))
+	sched_setaffinity((pid), sizeof(cpumask), (cpumask))
 #define fio_getaffinity(pid, ptr)	\
 	sched_getaffinity((pid), sizeof(cpu_set_t), (ptr))
 #elif defined(CONFIG_2ARG_AFFINITY)
 #define fio_setaffinity(pid, cpumask)	\
-	sched_setaffinity((pid), &(cpumask))
+	sched_setaffinity((pid), (cpumask))
 #define fio_getaffinity(pid, ptr)	\
 	sched_getaffinity((pid), (ptr))
 #endif

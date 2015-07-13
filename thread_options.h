@@ -163,13 +163,8 @@ struct thread_options {
 	unsigned int stonewall;
 	unsigned int new_group;
 	unsigned int numjobs;
-#if defined(__NetBSD__)
 	os_cpu_mask_t *cpumask;
 	os_cpu_mask_t *verify_cpumask;
-#else
-	os_cpu_mask_t cpumask;
-	os_cpu_mask_t verify_cpumask;
-#endif
 	unsigned int cpus_allowed_policy;
 	char *numa_cpunodes;
 	unsigned short numa_mem_mode;

@@ -46,39 +46,23 @@ static double calibrate_unit(unsigned char *data)
 static void free_cpu_affinity(struct idle_prof_thread *ipt)
 {
 #if defined(FIO_HAVE_CPU_AFFINITY)
-#if defined(__NetBSD__)
 	fio_cpuset_exit(ipt->cpu_mask);
-#else
-	fio_cpuset_exit(&ipt->cpu_mask);
-#endif
 #endif
 }
 
 static int set_cpu_affinity(struct idle_prof_thread *ipt)
 {
 #if defined(FIO_HAVE_CPU_AFFINITY)
-#if defined(__NetBSD__)
 	if (fio_cpuset_init(ipt->cpu_mask)) {
-#else
-	if (fio_cpuset_init(&ipt->cpu_mask)) {
-#endif
 		log_err("fio: cpuset init failed\n");
 		return -1;
 	}
 
-#if defined(__NetBSD__)
 	fio_cpu_set(ipt->cpu_mask, ipt->cpu);
-#else
-	fio_cpu_set(&ipt->cpu_mask, ipt->cpu);
-#endif
 
 	if (fio_setaffinity(gettid(), ipt->cpu_mask)) {
 		log_err("fio: fio_setaffinity failed\n");
-#if defined(__NetBSD__)
 		fio_cpuset_exit(ipt->cpu_mask);
-#else
-		fio_cpuset_exit(&ipt->cpu_mask);
-#endif
 		return -1;
 	}
 

@@ -9,11 +9,7 @@
 struct timeval *fio_tv = NULL;
 int fio_gtod_offload = 0;
 static pthread_t gtod_thread;
-#if defined(__NetBSD__)
 static os_cpu_mask_t *fio_gtod_cpumask;
-#else
-static os_cpu_mask_t fio_gtod_cpumask;
-#endif
 
 void fio_gtod_init(void)
 {
@@ -100,10 +96,6 @@ err:
 void fio_gtod_set_cpu(unsigned int cpu)
 {
 #ifdef FIO_HAVE_CPU_AFFINITY
-#if defined(__NetBSD__)
 	fio_cpu_set(fio_gtod_cpumask, cpu);
-#else
-	fio_cpu_set(&fio_gtod_cpumask, cpu);
-#endif
 #endif
 }
